@@ -1,0 +1,23 @@
+
+SNAIL : Horaire des trains TRANSILIEN
+
+Liste des verions :
+===================
+
+15/06/2012 : Création du projet
+
+
+Liste des fichiers :
+====================
+
+  README :
+  Ce fichier
+
+  listegares.py :
+  Script Python pour rechercher le code DDG d'une station à partir de son nom.
+
+  listegares.json :
+  Fichier lu par le script listegares.py pour récupérer le code DDG d'une station à partir de son nom.
+  Il contient une liste de stations contenant la liste de stations et leurs informations (code DDG et nom)
+  Le fichier fournit dans le projet n'est qu'un exemple permettant de comprendre la structure JSON employée. 
+  Vous devez écrire votre propre fichier pour utiliser pleinement le script.
