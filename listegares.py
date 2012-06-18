@@ -9,8 +9,7 @@ if len(sys.argv) < 2:
 
 # Parsing du fichier
 data = open('listegares.json', 'r')
-for line in data:
-    json_data = json.loads(line)
+json_data = json.loads(data.read())
 data.close()
 
 # Recuperation des donnees
@@ -19,5 +18,7 @@ for gare in gares:
     if re.search(sys.argv[1], gare['name'], re.I):
         code = gare['codeDDG']
         name = gare['name']
+        gpsX = gare['x']
+        gpsY = gare['y']
         print code + "\t" + name
 

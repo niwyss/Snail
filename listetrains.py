@@ -10,20 +10,18 @@ if len(sys.argv) < 2:
 
 # Parsing du fichier de parametres
 data = open('parameters.json', 'r')
-for line in data:
-    json_data_parametres = json.loads(line)
+json_data_parametres = json.loads(data.read())
 data.close()
 
 # Recuperation des parametres
-host = json_data_parametres["host"] 
-selector = json_data_parametres["selector"] 
-params = json_data_parametres["params"] 
-headers = json_data_parametres["headers"]  
+HOST = json_data_parametres["host"] 
+SELECTOR = json_data_parametres["selector"] 
+PARAMS = json_data_parametres["params"] 
+HEADERS = json_data_parametres["headers"]  
 
 # Parsing du fichier pour les gares
 data = open('listegares.json', 'r')
-for line in data:
-    json_data_gares = json.loads(line)
+json_data_gares = json.loads(data.read())
 data.close()
 
 # Transformation en dictionnaire (Code DDG station) -> (libelle station)
@@ -35,8 +33,8 @@ for gare in gares:
     stations[code] = name
 
 # Recuperation de liste des trains
-conn = httplib.HTTPConnection(host)
-conn.request("POST", selector, params % sys.argv[1], headers)
+conn = httplib.HTTPConnection(HOST)
+conn.request("POST", SELECTOR, PARAMS % sys.argv[1], HEADERS)
 response = conn.getresponse()
 data = response.read()
 conn.close()
