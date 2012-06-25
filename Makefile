@@ -1,10 +1,9 @@
-url = {Web Service Url Here}
+url = http://sncf.mobi/infotrafic/iphoneapp/gares/index/lastUpdate/20120101000000
 
-database:
-	rm -f ./db/snailbase
+database: 
 	./db/create-snailbase.py
 	./db/insert-data-snailbase.py $(url)
 
 clean:
-	rm -f *~
+	rm -f *~ ./db/*~ snailbase
 
