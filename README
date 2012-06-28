@@ -6,7 +6,7 @@ Liste des verions :
 
 15/06/2012 : Création du projet
 25/06/2012 : Stockage des informations dans une base de données SQLite
-
+28/06/2012 : Lecture des informations depuis la base de données
 
 Liste des fichiers :
 ====================
@@ -34,3 +34,18 @@ Liste des fichiers :
 
   Makefile : 
   Opération de maintenance sur le répertoire du projet (Création de la base, Nettoyage, ...)
+
+
+Exemples d'utilisation :
+========================
+
+1) Récupération du code d'une gare à partir de son nom :
+> ./query/listegares.py Rungis
+PRU  P. DE RUNGIS AEROP.                 
+RF   RUNGIS LA FR. 
+
+2) Affichage de la liste des prochains trains partant d'une station : 
+> ./query/listetrains.py PRU
+GOTA  22:38  2  MONTIGNY BEAUCHAMP                 
+GOTA  23:08  2  MONTIGNY BEAUCHAMP                 
+GOTA  23:38  2  MONTIGNY BEAUCHAMP 
