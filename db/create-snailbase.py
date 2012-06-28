@@ -4,7 +4,7 @@
 import sqlite3
 
 # Connection to the base
-connection = sqlite3.connect('snailbase')
+connection = sqlite3.connect('snail.sqlite')
 
 # Create table
 connection.execute(''' create table station (id integer primary key, 

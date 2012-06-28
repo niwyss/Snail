@@ -27,7 +27,7 @@ httpConnection.close()
 json_data = json.loads(data)
 
 # Connection to the base
-connection = sqlite3.connect('snailbase')
+connection = sqlite3.connect('snail.sqlite')
 
 # Clean the base
 connection.execute(' delete from station '); 

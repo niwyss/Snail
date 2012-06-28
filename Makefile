@@ -5,5 +5,5 @@ database:
 	./db/insert-data-snailbase.py $(url)
 
 clean:
-	rm -f *~ ./db/*~ snailbase
+	rm -f *~ ./db/*~ ./query/*~ snail.sqlite
 

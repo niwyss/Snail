@@ -2,52 +2,51 @@
 
 import json
 import sys
-import re
 import httplib
+import sqlite3
 
 if len(sys.argv) < 2:
     sys.exit('Usage: %s codeDDG [ex: PRU]' % sys.argv[0])
 
-# Parsing du fichier de parametres
+codeStation = sys.argv[1]
+
+# Connection to the base
+connection = sqlite3.connect('snail.sqlite')
+connection.row_factory = sqlite3.Row
+
+# Request parameters
 data = open('parameters.json', 'r')
 json_data_parametres = json.loads(data.read())
 data.close()
-
-# Recuperation des parametres
 HOST = json_data_parametres["host"] 
 SELECTOR = json_data_parametres["selector"] 
 PARAMS = json_data_parametres["params"] 
 HEADERS = json_data_parametres["headers"]  
 
-# Parsing du fichier pour les gares
-data = open('listegares.json', 'r')
-json_data_gares = json.loads(data.read())
-data.close()
-
-# Transformation en dictionnaire (Code DDG station) -> (libelle station)
-gares = json_data_gares['stations']
+# Transforms stations list into dictionnary (Code DDG) -> (libelle)
 stations = {}
-for gare in gares:
-    code = gare['codeDDG']
-    name = gare['name']
+sql = ' SELECT * FROM station '
+for station in connection.execute(sql):
+    code = station['codeDDG']
+    name = station['name']
     stations[code] = name
 
-# Recuperation de liste des trains
+# Get informations for this station 
 conn = httplib.HTTPConnection(HOST)
-conn.request("POST", SELECTOR, PARAMS % sys.argv[1], HEADERS)
+conn.request("POST", SELECTOR, PARAMS % codeStation, HEADERS)
 response = conn.getresponse()
 data = response.read()
 conn.close()
 json_data_trains = json.loads(data)
 
-# Affichage des informations sur les trains
+# Print list of next trains for this station
 trains = json_data_trains[0]['data']
 for train in trains:
     code = train['trainMissionCode']
-    terminus = train['trainTerminus']
+    terminus = train['trainTerminus'].strip().encode("utf-8", 'replace')
     lane = train['trainLane']
-    hour = train['trainHour']
-    name = stations[terminus]
-    print code + '\t' + lane + '\t' + hour + '\t' + name
+    hour = train['trainHour'][11:]
+    name = stations[terminus].strip().encode("utf-8", 'replace')
+    print('{0:4}  {1:5}  {3:1}  {2:35}'.format(code, hour, name, lane))
 
 
