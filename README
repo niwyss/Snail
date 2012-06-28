@@ -40,12 +40,15 @@ Exemples d'utilisation :
 ========================
 
 1) Récupération du code d'une gare à partir de son nom :
-> ./query/listegares.py Rungis
-PRU  P. DE RUNGIS AEROP.                 
-RF   RUNGIS LA FR. 
+
+  > ./query/listegares.py Rungis
+  PRU  P. DE RUNGIS AEROP.                 
+  RF   RUNGIS LA FR. 
+
 
 2) Affichage de la liste des prochains trains partant d'une station : 
-> ./query/listetrains.py PRU
-GOTA  22:38  2  MONTIGNY BEAUCHAMP                 
-GOTA  23:08  2  MONTIGNY BEAUCHAMP                 
-GOTA  23:38  2  MONTIGNY BEAUCHAMP 
+
+  > ./query/listetrains.py PRU
+  GOTA  22:38  2  MONTIGNY BEAUCHAMP                 
+  GOTA  23:08  2  MONTIGNY BEAUCHAMP                 
+  GOTA  23:38  2  MONTIGNY BEAUCHAMP 
