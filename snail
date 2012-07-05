@@ -2,37 +2,58 @@
 # -*- coding:utf-8 -*-
 
 from   model    import database
-from   query    import *
+from   query    import station
+from   query    import train
 import argparse
 import sys
 
 # Create the top-level parser
 parser = argparse.ArgumentParser(description='SNAIL : Horaires des trains')
-parser.add_argument('-v', '--verbose', action='store_true', help='Verbose')
-parser.add_argument('--no-color', action='store_true', help='With color')
-subparser = parser.add_subparsers(help='Sub parser help')
+parser.add_argument('-v', '--verbose', action='store_true', help='verbose')
+parser.add_argument('--no-color', action='store_true', help='with color')
+subparser = parser.add_subparsers(title='commands', dest="command_name" )
 
 # Create the parser for the "init" command
-parser_init = subparser.add_parser('init', help='Create and init the database')
-parser_init.add_argument('file', action='store', type=file, help='The database file')
-parser_init.add_argument('url', action='store', help='URL of WebService used to init the database')
+parser_init = subparser.add_parser('init', help='create, init the database')
+parser_init.add_argument('file', action='store', help='the database file')
+parser_init.add_argument('url', action='store', help='url of web-service used to init the database')
+
+# Create the parser for the "station" command
+parser_station = subparser.add_parser('station', help='list stations')
+parser_station.add_argument('name', action='store', help='name of the station')
+
+# Create the parser for the "train" command
+parser_train = subparser.add_parser('train', help='list next trains on a station')
+parser_train.add_argument('station', action='store', help='the DDG code of the station')
+
 args = parser.parse_args()
 
 # Command : init
-if args.command == 'init':
+if args.command_name == 'init':
     
-    # Launch base création
-    database.create(args.file, args.url)
-    database.init(args.file)
-    print 'done.'
+    # Create the base
+    database.create(args.file)
 
-# Command : gare
-elif args.command == 'gare':
-    print 'gare'
+    # Init the base
+    database.init(args.file, args.url)
+
+# Command : station
+elif args.command_name == 'station':
+    
+    # The default database
+    database_path = 'snail.sqlite'
+
+    # List the stations with {args.name} as part of her name
+    station.list(database_path, args.name)
 
 # Command : train
-elif args.command == 'train':
-    print 'train'
+elif args.command_name == 'train':
+
+    # The default database
+    database_path = 'snail.sqlite'
+
+    # List the trains
+    train.list(database_path, args.station)
 
 # No command : help
 else:

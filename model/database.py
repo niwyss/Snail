@@ -28,7 +28,7 @@ def create(database_path):
 def init(database_path, url):
 
     # Parse the url
-    url = urlparse(sys.argv[1])
+    url = urlparse(url)
     server = url.netloc
     path = url.path
 
@@ -44,7 +44,7 @@ def init(database_path, url):
     json_data = json.loads(data)
 
     # Connection to the base
-    connection = sqlite3.connect('snail.sqlite')
+    connection = sqlite3.connect(database_path)
     
     # Clean the base
     connection.execute(' delete from station '); 
