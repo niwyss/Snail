@@ -6,6 +6,7 @@ from   query    import station
 from   query    import train
 import argparse
 import sys
+import os
 
 # Create the top-level parser
 parser = argparse.ArgumentParser(description='SNAIL : Horaires des trains')
@@ -15,7 +16,6 @@ subparser = parser.add_subparsers(title='commands', dest="command_name" )
 
 # Create the parser for the "init" command
 parser_init = subparser.add_parser('init', help='create, init the database')
-parser_init.add_argument('file', action='store', help='the database file')
 parser_init.add_argument('url', action='store', help='url of web-service used to init the database')
 
 # Create the parser for the "station" command
@@ -26,22 +26,31 @@ parser_station.add_argument('name', action='store', help='name of the station')
 parser_train = subparser.add_parser('train', help='list next trains on a station')
 parser_train.add_argument('station', action='store', help='the DDG code of the station')
 
+# Create the parser for the "help" command
+parser_help = subparser.add_parser('help', help='help for a command')
+
 args = parser.parse_args()
+
+# Get the path to command from where she's called
+path = sys.argv[0][:-5]
 
 # Command : init
 if args.command_name == 'init':
     
+    # The default database
+    database_path = path + 'snail.sqlite'
+
     # Create the base
-    database.create(args.file)
+    database.create(database_path)
 
     # Init the base
-    database.init(args.file, args.url)
+    database.init(database_path, args.url)
 
 # Command : station
 elif args.command_name == 'station':
-    
+
     # The default database
-    database_path = 'snail.sqlite'
+    database_path = path + 'snail.sqlite'
 
     # List the stations with {args.name} as part of her name
     station.list(database_path, args.name)
@@ -50,14 +59,18 @@ elif args.command_name == 'station':
 elif args.command_name == 'train':
 
     # The default database
-    database_path = 'snail.sqlite'
+    database_path = path + 'snail.sqlite'
+
+    # The default parameters
+    parameters_path = path + 'parameters.json'
 
     # List the trains
-    train.list(database_path, args.station)
+    train.list(database_path, parameters_path, args.station)
 
 # No command : help
 else:
-    print 'help'
+    parser.print_help()
+
 
 
 
