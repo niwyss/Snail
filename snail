@@ -1,0 +1,42 @@
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
+
+from   model    import *
+from   query    import *
+import argparse
+
+# Text en fin d'aide avec la liste des commandes disponibles
+epilog_text = '''
+The most commonly used snail commands are :
+  train  Informations sur les trains
+  gare   Informations sur les gares
+  init   Création de la base de données
+
+See 'snail help <command>' for more information on a specific command.
+'''
+
+# Parse the arguments
+parser = argparse.ArgumentParser(description='SNAIL : Horaires des trains', 
+                                 epilog=epilog_text, 
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+parser.add_argument('command', action='store', help='Commande à executer')
+args = parser.parse_args()
+
+# Command : init
+if args.command == 'init':
+    print 'init'
+    
+
+# Command : gare
+elif args.command == 'gare':
+    print 'gare'
+
+# Command : train
+else:
+    print 'train'
+
+
+
+
+
+
