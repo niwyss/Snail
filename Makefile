@@ -1,4 +1,4 @@
-url = {Url to the Web Service}
+url=http://sncf.mobi/infotrafic/iphoneapp/gares/index/lastUpdate/20120101000000
 
 database: 
 	./db/create-snailbase.py

@@ -1,39 +1,42 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 
-from   model    import *
+from   model    import database
 from   query    import *
 import argparse
+import sys
 
-# Text en fin d'aide avec la liste des commandes disponibles
-epilog_text = '''
-The most commonly used snail commands are :
-  train  Informations sur les trains
-  gare   Informations sur les gares
-  init   Création de la base de données
+# Create the top-level parser
+parser = argparse.ArgumentParser(description='SNAIL : Horaires des trains')
+parser.add_argument('-v', '--verbose', action='store_true', help='Verbose')
+parser.add_argument('--no-color', action='store_true', help='With color')
+subparser = parser.add_subparsers(help='Sub parser help')
 
-See 'snail help <command>' for more information on a specific command.
-'''
-
-# Parse the arguments
-parser = argparse.ArgumentParser(description='SNAIL : Horaires des trains', 
-                                 epilog=epilog_text, 
-                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-parser.add_argument('command', action='store', help='Commande à executer')
+# Create the parser for the "init" command
+parser_init = subparser.add_parser('init', help='Create and init the database')
+parser_init.add_argument('file', action='store', type=file, help='The database file')
+parser_init.add_argument('url', action='store', help='URL of WebService used to init the database')
 args = parser.parse_args()
 
 # Command : init
 if args.command == 'init':
-    print 'init'
     
+    # Launch base création
+    database.create(args.file, args.url)
+    database.init(args.file)
+    print 'done.'
 
 # Command : gare
 elif args.command == 'gare':
     print 'gare'
 
 # Command : train
-else:
+elif args.command == 'train':
     print 'train'
+
+# No command : help
+else:
+    print 'help'
 
 
 
