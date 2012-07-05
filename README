@@ -7,6 +7,7 @@ Liste des verions :
 15/06/2012 : Création du projet
 25/06/2012 : Stockage des informations dans une base de données SQLite
 28/06/2012 : Lecture des informations depuis la base de données
+05/07/2021 : Gestion de la ligne de commande
 
 Liste des fichiers :
 ====================
@@ -14,41 +15,42 @@ Liste des fichiers :
   README :
   Ce fichier
   
-  snailbase : 
+  snail.sqlite : 
   Base de données contenant la liste des stations
 
-  db/create-snailbase.py : 
-  Script de création de la base de données
+  snail : 
+  Script principal
 
-  db/insert-data-snailbase.py : 
-  Script d'alimentation de la base de données
+  model/database.py : 
+  Module pour la création et d'alimentation de la base de données
 
-  query/listegares.py :
-  Script Python pour rechercher le code DDG d'une station à partir de son nom.
+  query/gare.py :
+  Module pour effectuer des recherches sur les stations
 
-  query/listetrains.py : 
-  Script Python pour rechercher la liste des trains pour une gare.
+  query/train.py : 
+  Module pour récupérer des informations sur les trains
 
   parameters.json : 
   Contient les paramétres de connexion aux serveurs de données.
 
-  Makefile : 
-  Opération de maintenance sur le répertoire du projet (Création de la base, Nettoyage, ...)
-
-
 Exemples d'utilisation :
 ========================
 
+0) Création de la base de données :
+
+  > snail init http://mon.service.web/infosGares
+
+
 1) Récupération du code d'une gare à partir de son nom :
 
-  > ./query/listegares.py Rungis
+  > snail station Rungis
   PRU  P. DE RUNGIS AEROP.                 
   RF   RUNGIS LA FR. 
 
 
 2) Affichage de la liste des prochains trains partant d'une station : 
 
-  > ./query/listetrains.py PRU
+  > snail train PRU
   GOTA  22:38  2  MONTIGNY BEAUCHAMP                 
   GOTA  23:08  2  MONTIGNY BEAUCHAMP                 
   GOTA  23:38  2  MONTIGNY BEAUCHAMP 
