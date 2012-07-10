@@ -6,6 +6,11 @@ import sqlite3
 
 def list(database_path, name):
 
+    # Test : database
+    if !os.path.exists(database_path):
+        print "snail: error: database doesn't exist. Create it with : snail init."
+        sys.exit(1)
+
     # Connection to the base
     connection = sqlite3.connect(database_path)
     connection.row_factory = sqlite3.Row
