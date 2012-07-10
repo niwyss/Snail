@@ -3,6 +3,7 @@
 import json
 import sys
 import sqlite3
+import os
 
 def list(database_path, name):
 

@@ -4,6 +4,7 @@ import json
 import sys
 import httplib
 import sqlite3
+import os
 
 def list(database_path, parameters_path, station_code_ddg):
     
