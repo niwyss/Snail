@@ -8,12 +8,12 @@ import sqlite3
 def list(database_path, parameters_path, station_code_ddg):
     
     # Test : database
-    if !os.path.exists(database_path):
+    if not os.path.exists(database_path):
         print "snail: error: database doesn't exist. Create it with : snail init."
         sys.exit(1)
 
     # Test : parameters.json
-    if !os.path.exists(parameters_path):
+    if not os.path.exists(parameters_path):
         print "snail: error: parameters.json doesn't exist. Grab it from anywhere."
         sys.exit(1)
 
