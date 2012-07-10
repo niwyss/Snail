@@ -31,8 +31,13 @@ parser_help = subparser.add_parser('help', help='help for a command')
 
 args = parser.parse_args()
 
-# Get the path to command from where she's called
-path = sys.argv[0][:-5]
+# Get the path to command from where she's called                           
+path = "."
+if os.path.islink(sys.argv[0]):
+    path = os.readlink(sys.argv[0])[:-5]
+else:
+    path =  sys.argv[0][:-5]
+path = os.path.abspath(path) + os.sep
 
 # Command : init
 if args.command_name == 'init':
