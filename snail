@@ -20,7 +20,7 @@ parser_init.add_argument('url', action='store', help='url of web-service used to
 
 # Create the parser for the "station" command
 parser_station = subparser.add_parser('station', help='list stations')
-parser_station.add_argument('name', action='store', help='name of the station')
+parser_station.add_argument('names', action='store', nargs='*', help='names of the stations')
 
 # Create the parser for the "train" command
 parser_train = subparser.add_parser('train', help='list next trains on a station')
@@ -58,7 +58,7 @@ elif args.command_name == 'station':
     database_path = path + 'snail.sqlite'
 
     # List the stations with {args.name} as part of her name
-    station.list(database_path, args.name)
+    station.list(database_path, args.names)
 
 # Command : train
 elif args.command_name == 'train':
