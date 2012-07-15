@@ -25,11 +25,14 @@ import argparse
 import sys
 import os
 
-version = '0.2'
+# Informations on the product
+product_name = "snail"
+product_description = 'snail : put a snail in your shell'
+product_version = '0.2'
 
 # Create the top-level parser
-parser = argparse.ArgumentParser(description='snail : put a snail in your shell', prog='snail')
-parser.add_argument('--version', action='version', version='%(prog)s ' + version)
+parser = argparse.ArgumentParser(description=product_description, prog=product_name)
+parser.add_argument('--version', action='version', version='%(prog)s ' + product_version)
 parser.add_argument('-v', '--verbose', action='store_true', help='verbose')
 #parser.add_argument('--no-color', action='store_true', help='with color')
 subparser = parser.add_subparsers(title='commands', dest="command_name" )
