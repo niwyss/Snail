@@ -6,6 +6,17 @@ import httplib
 import sqlite3
 import os
 
+def fetch_trains(host, selector, params, headers, code_station):
+    try:
+        conn = httplib.HTTPConnection(host)
+        conn.request("POST", selector, params % code_station, headers)
+        response = conn.getresponse()
+        data = response.read()
+        conn.close() 
+        return json.loads(data)
+    except:
+        print "snail: error: web service unreachable."
+        sys.exit(0)
 
 def fetch_all_stations(connection):
     sql = ' SELECT * FROM station '
@@ -53,15 +64,11 @@ def list(database_path, parameters_path, station_code_ddg):
     connection = sqlite3.connect(database_path)
     connection.row_factory = sqlite3.Row
     
-    # Request parameters
+    # Get webservice request configuration
     data = open(parameters_path, 'r')
     json_data_parametres = json.loads(data.read())
     data.close()
-    HOST = json_data_parametres["host"] 
-    SELECTOR = json_data_parametres["selector"] 
-    PARAMS = json_data_parametres["params"] 
-    HEADERS = json_data_parametres["headers"]  
-    
+      
     # Transforms stations list into dictionnary
     stations = {}
     for station in fetch_all_stations(connection):
@@ -73,12 +80,11 @@ def list(database_path, parameters_path, station_code_ddg):
     if station_code_ddg in stations:
 
         # Get informations for this station 
-        conn = httplib.HTTPConnection(HOST)
-        conn.request("POST", SELECTOR, PARAMS % station_code_ddg, HEADERS)
-        response = conn.getresponse()
-        data = response.read()
-        conn.close()
-        json_data_trains = json.loads(data)
+        host = json_data_parametres["host"] 
+        selector = json_data_parametres["selector"] 
+        params = json_data_parametres["params"]
+        headers = json_data_parametres["headers"]
+        json_data_trains = fetch_trains(host, selector, params, headers, station_code_ddg)
         
         # Print informations of the station
         station = fetch_station_by_code_ddg(connection, station_code_ddg)
