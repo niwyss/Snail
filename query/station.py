@@ -24,46 +24,25 @@ import sqlite3
 import os
 
 # Template
-template_title_color = "%s" # "\033[4;37m%s\033[0m"
 template_line_format_short = "{0:3}  {1:35}"
-template_line_format_long = "{0:3}  {2:5}  {3:8}  {4:10}  {5:10}  {1:35}"
+template_line_format_long  = "{0:3}  {2:5}  {3:8}  {4:10}  {5:10}  {1:35}"
 
-
-def fetch_stations_by_criteria(connection, criteria, patterns):
-    
-    # Default request
+def __fetch_all_stations(connection):
     sql = ' SELECT * FROM station '
-
-    # Convert patterns to the proper format
-    args = map(lambda x: '%' + x + '%', patterns)
-
-    if criteria and patterns and len(patterns) != 0:
-
-        # Criteria : name
-        if criteria == 'name':
-            sql = ' SELECT * FROM station WHERE ' + ' OR '.join(' name LIKE ?' for n in patterns)
-
-        # Criteria : code
-        elif criteria == 'code':
-            sql = ' SELECT * FROM station WHERE ' + ' OR '.join(' codeDDG LIKE ?' for n in patterns)
-   
+    args = []
     return connection.execute(sql, args).fetchall()
 
+def __fetch_stations_by_names(connection, names):
+    sql = ' SELECT * FROM station WHERE ' + ' OR '.join(' name LIKE ?' for n in names)
+    args = map(lambda x: '%' + x + '%', names)
+    return connection.execute(sql, args).fetchall()
 
-def print_titles(display_format):
+def __fetch_stations_by_codes(connection, codes):
+    sql = ' SELECT * FROM station WHERE ' + ' OR '.join(' codeDDG LIKE ?' for n in codes)
+    args = map(lambda x: '%' + x + '%', codes)
+    return connection.execute(sql, args).fetchall()
 
-    # Print short description
-    if display_format == 'short':
-        template_titles = template_title_color % template_line_format_short
-        print(template_titles.format("DDG", "NAME"))
-
-    # Print long description
-    elif display_format  == 'long':
-        template_titles = template_title_color % template_line_format_long
-        print(template_titles.format("DDG", "NAME", "QLT", "UIC", "LONGITUDE", "LATITUDE"))
-
-
-def print_station(station, display_format):
+def __print_station(station, display_format):
     codeDDG = station['codeDDG']
     codeQLT = station['codeQLT']
     codeUIC = station['codeUIC']
@@ -91,13 +70,19 @@ def list(database_path, criteria, patterns, display_format):
     connection = sqlite3.connect(database_path)
     connection.row_factory = sqlite3.Row
 
+    # Fetch stations
+    if not patterns or len(patterns) == 0:
+        stations = __fetch_all_stations(connection)
+    elif criteria == 'code':
+        stations = __fetch_stations_by_codes(connection, patterns)
+    else:
+        stations = __fetch_stations_by_names(connection, patterns)
+
     # Print stations
-    stations = fetch_stations_by_criteria(connection, criteria, patterns)
     if stations and len(stations) > 0:
-        print_titles(display_format)
+        print "%d station(s)" % len(stations)
         for station in stations:
-            print_station(station,display_format )
+            __print_station(station,display_format )
 
     # Close the connection
     connection.close()
-
