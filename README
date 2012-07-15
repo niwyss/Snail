@@ -1,5 +1,10 @@
 
-SNAIL : Horaire des trains
+SNAIL : Put a snail in your shell
+
+License :
+=========
+
+See COPYING and file headers for license info
 
 Liste des verions :
 ===================
@@ -55,3 +60,5 @@ Exemples d'utilisation :
   GOTA  22:38  2  MONTIGNY BEAUCHAMP                 
   GOTA  23:08  2  MONTIGNY BEAUCHAMP                 
   GOTA  23:38  2  MONTIGNY BEAUCHAMP 
+
+
