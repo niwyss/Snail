@@ -23,9 +23,7 @@ def print_station(station):
     codeUIC = station['codeUIC']
     longitude = station['longitude']
     latitude = station['latitude']
-    print("{0} [{1}]").format(name, codeDDG)
-    print("  x={0:8}").format(longitude)
-    print("  y={0:8}").format(latitude)
+    print("{0} [{1}] ({2}/{3})").format(name, codeDDG, longitude, latitude)
 
 def print_train(train, stations):
     code = train['trainMissionCode']

@@ -8,10 +8,13 @@ import argparse
 import sys
 import os
 
+version = '0.2'
+
 # Create the top-level parser
-parser = argparse.ArgumentParser(description='SNAIL : Horaires des trains')
+parser = argparse.ArgumentParser(description='snail : put a snail in your shell', prog='snail')
+parser.add_argument('--version', action='version', version='%(prog)s ' + version)
 parser.add_argument('-v', '--verbose', action='store_true', help='verbose')
-parser.add_argument('--no-color', action='store_true', help='with color')
+#parser.add_argument('--no-color', action='store_true', help='with color')
 subparser = parser.add_subparsers(title='commands', dest="command_name" )
 
 # Create the parser for the "init" command
@@ -20,7 +23,11 @@ parser_init.add_argument('url', action='store', help='url of web-service used to
 
 # Create the parser for the "station" command
 parser_station = subparser.add_parser('station', help='list stations')
-parser_station.add_argument('names', action='store', nargs='*', help='names of the stations')
+group_station_type_filter = parser_station.add_mutually_exclusive_group()
+group_station_type_filter.add_argument('-n', '--name', action='store_true', help='find station by name', default=True)
+group_station_type_filter.add_argument('-c', '--code', action='store_true', help='find station by code')
+parser_station.add_argument('patterns', action='store', nargs='*', help='patterns')
+parser_station.add_argument('-l', '--long-format', action='store_true', help='long format', default=False)
 
 # Create the parser for the "train" command
 parser_train = subparser.add_parser('train', help='list next trains on a station')
@@ -57,8 +64,12 @@ elif args.command_name == 'station':
     # The default database
     database_path = path + 'snail.sqlite'
 
-    # List the stations with {args.name} as part of her name
-    station.list(database_path, args.names)
+    # Params
+    criteria = ("name","code")[args.code]
+    display_format = ("short", "long")[args.long_format]
+
+    # List the stations
+    station.list(database_path, criteria, args.patterns, display_format)
 
 # Command : train
 elif args.command_name == 'train':
