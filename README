@@ -1,64 +1,31 @@
 
 SNAIL : Put a snail in your shell
 
-License :
-=========
+   - Researchs and prints station's informations
+   - Print next trains on a station
 
+Usage : 
+   
+   0) Init the database :
+
+   > snail init [URL]
+
+
+   1) Researchs and prints station's informations :
+
+   > snail station Rungis
+   PRU  P. DE RUNGIS AEROP.                 
+   RF   RUNGIS LA FR. 
+
+
+   2) Print next trains on a station : 
+
+   > snail train PRU
+   GOTA  22:38  2  MONTIGNY BEAUCHAMP                 
+   GOTA  23:08  2  MONTIGNY BEAUCHAMP                 
+   GOTA  23:38  2  MONTIGNY BEAUCHAMP 
+
+SNAIL - 2012 (c) Nicolas Wyss
 See COPYING and file headers for license info
-
-Liste des verions :
-===================
-
-15/06/2012 : Création du projet
-25/06/2012 : Stockage des informations dans une base de données SQLite
-28/06/2012 : Lecture des informations depuis la base de données
-05/07/2012 : Gestion de la ligne de commande (Arguments, Sous commande, ...)
-10/07/2012 : Correction sur le dossier de travail
-
-Liste des fichiers :
-====================
-
-  README :
-  Ce fichier
-  
-  snail.sqlite : 
-  Base de données contenant la liste des stations
-
-  snail : 
-  Script principal
-
-  model/database.py : 
-  Module pour la création et d'alimentation de la base de données
-
-  query/gare.py :
-  Module pour effectuer des recherches sur les stations
-
-  query/train.py : 
-  Module pour récupérer des informations sur les trains
-
-  parameters.json : 
-  Contient les paramétres de connexion aux serveurs de données.
-
-Exemples d'utilisation :
-========================
-
-0) Création de la base de données :
-
-  > snail init http://mon.service.web/infosGares
-
-
-1) Récupération du code d'une gare à partir de son nom :
-
-  > snail station Rungis
-  PRU  P. DE RUNGIS AEROP.                 
-  RF   RUNGIS LA FR. 
-
-
-2) Affichage de la liste des prochains trains partant d'une station : 
-
-  > snail train PRU
-  GOTA  22:38  2  MONTIGNY BEAUCHAMP                 
-  GOTA  23:08  2  MONTIGNY BEAUCHAMP                 
-  GOTA  23:38  2  MONTIGNY BEAUCHAMP 
 
 
