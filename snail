@@ -18,9 +18,11 @@
 # You should have received a copy of the GNU General Public License
 # along with SNAIL.  If not, see <http://www.gnu.org/licenses/>.
 
-import model.database
-import query.station
-import query.train
+from modules import database
+from modules import init 
+
+import modules.station
+import modules.train
 import argparse
 import sys
 import os
@@ -42,7 +44,6 @@ def parse_arguments():
 
     # Create the parser for the "init" command
     parser_init = subparser.add_parser('init', help='create, init the database')
-    parser_init.add_argument('url', action='store', help='url of web-service used to init the database')
     
     # Create the parser for the "station" command
     parser_station = subparser.add_parser('station', help='list stations')
@@ -75,14 +76,17 @@ path = os.path.abspath(path) + os.sep
 # The default database
 database_path = path + 'snail.sqlite'
 
+# The default parameters
+parameters_path = path + 'parameters.json'
+
 # Command : init
 if args.command_name == 'init':
     
     # Create the base
-    query.database.create(database_path)
+    database.create(database_path)
 
     # Init the base
-    query.database.init(database_path, args.url)
+    init.execute(database_path, parameters_path)
 
 # Command : station
 elif args.command_name == 'station':
@@ -96,9 +100,6 @@ elif args.command_name == 'station':
 
 # Command : train
 elif args.command_name == 'train':
-
-    # The default parameters
-    parameters_path = path + 'parameters.json'
 
     # List the trains
     query.train.list(database_path, parameters_path, args.station)
