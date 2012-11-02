@@ -41,18 +41,16 @@ def __fetch_all_stations(connection):
     return connection.execute(sql).fetchall()
 
 def __fetch_station_by_code_ddg(connection, code_ddg):
-    sql = ' SELECT * FROM station where codeDDG = ? '
+    sql = ' SELECT * FROM station where code = ? '
     args = [code_ddg]
     return connection.execute(sql, args).fetchone()
 
 def __print_station(station):
     name = station['name'].strip().encode("utf-8", 'replace')
-    codeDDG = station['codeDDG']
-    codeQLT = station['codeQLT']
-    codeUIC = station['codeUIC']
+    code = station['code']
     longitude = station['longitude']
     latitude = station['latitude']
-    print("{0} [{1}] ({2}/{3})").format(name, codeDDG, longitude, latitude)
+    print("{0} [{1}] ({2}/{3})").format(name, code, longitude, latitude)
 
 def __print_train(train, stations):
     code = train['trainMissionCode']
@@ -66,7 +64,7 @@ def __print_train(train, stations):
 def __print_information(information):
     print " - " + information.strip().encode("utf-8", 'replace').replace("\n", "\n   ")
   
-def list(database_path, parameters_path, station_code_ddg):
+def list(database_path, parameters_path, station_code):
     
     # Test : database
     if not os.path.exists(database_path):
@@ -90,22 +88,22 @@ def list(database_path, parameters_path, station_code_ddg):
     # Transforms stations list into dictionnary
     stations = {}
     for station in __fetch_all_stations(connection):
-        code = station['codeDDG']
+        code = station['code']
         name = station['name']
         stations[code] = name
     
     # Only if code exits in database
-    if station_code_ddg in stations:
+    if station_code in stations:
 
         # Get informations for this station 
         host = json_data_parametres["host"] 
         selector = json_data_parametres["selector"] 
-        params = json_data_parametres["params"]["list_trains"]
+        params = json_data_parametres["params"]["trains"]
         headers = json_data_parametres["headers"]
-        json_data_trains = __fetch_trains(host, selector, params, headers, station_code_ddg)
+        json_data_trains = __fetch_trains(host, selector, params, headers, station_code)
         
         # Print informations of the station
-        station = __fetch_station_by_code_ddg(connection, station_code_ddg)
+        station = __fetch_station_by_code_ddg(connection, station_code)
         __print_station(station)
 
         # Print list of next trains for this station

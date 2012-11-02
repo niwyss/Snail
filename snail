@@ -20,9 +20,9 @@
 
 from modules import database
 from modules import init 
+from modules import station
+from modules import train
 
-import modules.station
-import modules.train
 import argparse
 import sys
 import os
@@ -96,13 +96,13 @@ elif args.command_name == 'station':
     display_format = ("short", "long")[args.long_format]
 
     # List stations
-    query.station.list(database_path, criteria, args.patterns, display_format)
+    station.list(database_path, criteria, args.patterns, display_format)
 
 # Command : train
 elif args.command_name == 'train':
 
     # List the trains
-    query.train.list(database_path, parameters_path, args.station)
+    train.list(database_path, parameters_path, args.station)
 
 # No command : help
 else:
