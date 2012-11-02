@@ -23,48 +23,30 @@ import sys
 import httplib
 import sqlite3
 import os
-
-def __fetch_trains(host, selector, params, headers, code_station):
-    try:
-        conn = httplib.HTTPConnection(host)
-        conn.request("POST", selector, params % code_station, headers)
-        response = conn.getresponse()
-        data = response.read()
-        conn.close() 
-        return json.loads(data)
-    except:
-        print "snail: error: web service unreachable."
-        sys.exit(0)
-
-def __fetch_all_stations(connection):
-    sql = ' SELECT * FROM station '
-    return connection.execute(sql).fetchall()
-
-def __fetch_station_by_code_ddg(connection, code_ddg):
-    sql = ' SELECT * FROM station where code = ? '
-    args = [code_ddg]
-    return connection.execute(sql, args).fetchone()
+import database
+import services
 
 def __print_station(station):
-    name = station['name'].strip().encode("utf-8", 'replace')
+    name = station['name']
     code = station['code']
+    compagnie = station['compagnie']
     longitude = station['longitude']
     latitude = station['latitude']
-    print("{0} [{1}] ({2}/{3})").format(name, code, longitude, latitude)
+    print(unicode("{0} [{1}] {4} ({2:0<13}/{3:0<13})").format(name, code, longitude, latitude, compagnie))
 
 def __print_train(train, stations):
     code = train['trainMissionCode']
-    terminus = train['trainTerminus'].strip().encode("utf-8", 'replace')
+    terminus = train['trainTerminus']
     lane = train['trainLane']
     number = train['trainNumber']
     hour = train['trainHour'][11:]
-    name = stations[terminus].strip().encode("utf-8", 'replace')
-    print('{0:5}  {1:4}  {4:6}  {3:1}  {5:3}  {2:35}'.format(hour, code, name, lane, number, terminus))
+    name = stations[terminus].strip()
+    print(unicode('{0:5}  {1:4}  {4:6}  {3:1}  {5:3}  {2:35}').format(hour, code, name, lane, number, terminus))
 
 def __print_information(information):
     print " - " + information.strip().encode("utf-8", 'replace').replace("\n", "\n   ")
   
-def list(database_path, parameters_path, station_code):
+def list(database_path, parameters_path, code_station):
     
     # Test : database
     if not os.path.exists(database_path):
@@ -79,42 +61,33 @@ def list(database_path, parameters_path, station_code):
     # Connection to the base
     connection = sqlite3.connect(database_path)
     connection.row_factory = sqlite3.Row
-    
-    # Get webservice request configuration
-    data = open(parameters_path, 'r')
-    json_data_parametres = json.loads(data.read())
-    data.close()
-      
+       
     # Transforms stations list into dictionnary
     stations = {}
-    for station in __fetch_all_stations(connection):
+    for station in database.fetch_all_stations(connection):
         code = station['code']
         name = station['name']
         stations[code] = name
     
     # Only if code exits in database
-    if station_code in stations:
+    if code_station in stations:
 
         # Get informations for this station 
-        host = json_data_parametres["host"] 
-        selector = json_data_parametres["selector"] 
-        params = json_data_parametres["params"]["trains"]
-        headers = json_data_parametres["headers"]
-        json_data_trains = __fetch_trains(host, selector, params, headers, station_code)
+        station_infos = services.fetch_station_infos(parameters_path, code_station)
         
         # Print informations of the station
-        station = __fetch_station_by_code_ddg(connection, station_code)
+        station = database.fetch_station_by_code(connection, code_station)
         __print_station(station)
 
         # Print list of next trains for this station
-        trains = json_data_trains[0]['data']
+        trains = station_infos['data']
         if trains and not len(trains) == 0:
             print "\n%d train(s)" % len(trains)
             for train in trains:
-               __print_train(train, stations)
+                __print_train(train, stations)
 
         # Print informations on the track
-        infos = json_data_trains[0]['list']
+        infos = station_infos['list']
         if infos and not len(infos) == 0:
             print "\n%d information(s)" % len(infos)
             for information in infos:

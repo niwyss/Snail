@@ -58,4 +58,32 @@ def fetch_stations(parameters_path, date):
     # Get data from the service
     return __fetch_data_from_web(host, selector, params, headers)[0]
 
+def fetch_lines(parameters_path, date):
+
+    # Get configuration
+    configuration =  __read_configuration(parameters_path)
+
+    # Get informations for this service
+    host = configuration["host"] 
+    selector = configuration["selector"] 
+    params = configuration["params"]["lines"] % date
+    headers = configuration["headers"]
+
+    # Get data from the service
+    return __fetch_data_from_web(host, selector, params, headers)[0]
+
+def fetch_station_infos(parameters_path, code_station):
+    
+    # Get configuration
+    configuration =  __read_configuration(parameters_path)
+
+    # Get informations for this service
+    host = configuration["host"] 
+    selector = configuration["selector"] 
+    params = configuration["params"]["trains"] % code_station
+    headers = configuration["headers"]
+
+    # Get data from the service
+    return __fetch_data_from_web(host, selector, params, headers)[0]
+
     

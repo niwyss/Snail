@@ -19,7 +19,6 @@
 # along with SNAIL.  If not, see <http://www.gnu.org/licenses/>.
 
 from modules import database
-from modules import init 
 from modules import station
 from modules import train
 
@@ -51,7 +50,6 @@ def parse_arguments():
     group_station_type_filter.add_argument('-n', '--name', action='store_true', help='find station by name', default=True)
     group_station_type_filter.add_argument('-c', '--code', action='store_true', help='find station by code')
     parser_station.add_argument('patterns', action='store', nargs='*', help='patterns')
-    parser_station.add_argument('-l', '--long-format', action='store_true', help='long format', default=False)
     
     # Create the parser for the "train" command
     parser_train = subparser.add_parser('train', help='list next trains on a station')
@@ -60,10 +58,13 @@ def parse_arguments():
     # Create the parser for the "help" command
     parser_help = subparser.add_parser('help', help='help for a command')
 
-    return parser.parse_args()
+    return parser
+
+# Get parser
+parser = parse_arguments()
 
 # Get options from command line
-args = parse_arguments()
+args = parser.parse_args()
 
 # Get the path to command from where she's called                           
 path = "."
@@ -86,17 +87,16 @@ if args.command_name == 'init':
     database.create(database_path)
 
     # Init the base
-    init.execute(database_path, parameters_path)
+    database.init(database_path, parameters_path)
 
 # Command : station
 elif args.command_name == 'station':
 
     # Params
     criteria = ("name","code")[args.code]
-    display_format = ("short", "long")[args.long_format]
 
     # List stations
-    station.list(database_path, criteria, args.patterns, display_format)
+    station.list(database_path, criteria, args.patterns)
 
 # Command : train
 elif args.command_name == 'train':

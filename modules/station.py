@@ -22,42 +22,21 @@ import json
 import sys
 import sqlite3
 import os
+import database
 
 # Template
-template_line_format_short = "{0:3}  {1:35}"
-template_line_format_long  = "{0:3}  {2:14}  {3:14}  {1:35}"
+template_line_format  = unicode("{0:3}  {1:40} {4:4} ({2:0<13} / {3:0<13})")
 
-def __fetch_all_stations(connection):
-    sql = ' SELECT * FROM station '
-    args = []
-    return connection.execute(sql, args).fetchall()
-
-def __fetch_stations_by_names(connection, names):
-    sql = ' SELECT * FROM station WHERE ' + ' OR '.join(' name LIKE ?' for n in names)
-    args = map(lambda x: '%' + x + '%', names)
-    return connection.execute(sql, args).fetchall()
-
-def __fetch_stations_by_codes(connection, codes):
-    sql = ' SELECT * FROM station WHERE ' + ' OR '.join(' code LIKE ?' for n in codes)
-    args = map(lambda x: '%' + x + '%', codes)
-    return connection.execute(sql, args).fetchall()
-
-def __print_station(station, display_format):
+def __print_station(station):
     code = station['code']
     longitude = station['longitude']
     latitude = station['latitude']
-    name = station['name'].strip().encode("utf-8", 'replace')
-
-    # Print short description
-    if display_format == 'short':
-        print(template_line_format_short.format(code, name))
-
-    # Print long description
-    elif display_format  == 'long':
-        print(template_line_format_long.format(code, name, longitude, latitude))
+    name = station['name']
+    compagnie = station['compagnie']
+    print template_line_format.format(code, name, longitude, latitude, compagnie) 
 
 
-def list(database_path, criteria, patterns, display_format):
+def list(database_path, criteria, patterns):
 
     # Test : database
     if not os.path.exists(database_path):
@@ -70,17 +49,17 @@ def list(database_path, criteria, patterns, display_format):
 
     # Fetch stations
     if not patterns or len(patterns) == 0:
-        stations = __fetch_all_stations(connection)
+        stations = database.fetch_all_stations(connection)
     elif criteria == 'code':
-        stations = __fetch_stations_by_codes(connection, patterns)
+        stations = database.fetch_stations_by_codes(connection, patterns)
     else:
-        stations = __fetch_stations_by_names(connection, patterns)
+        stations = database.fetch_stations_by_names(connection, patterns)
 
     # Print stations
     if stations and len(stations) > 0:
         print "%d station(s)" % len(stations)
         for station in stations:
-            __print_station(station,display_format )
+            __print_station(station)
 
     # Close the connection
     connection.close()
