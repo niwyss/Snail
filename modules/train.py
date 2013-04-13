@@ -25,23 +25,38 @@ import sqlite3
 import os
 import database
 import services
+import unicodedata
 
 def __print_station(station):
+
+    # Prepare the output
     name = station['name']
     code = station['code']
     compagnie = station['compagnie']
     longitude = station['longitude']
     latitude = station['latitude']
-    print(unicode("{0} [{1}] {4} ({2:0<13}/{3:0<13})").format(name, code, longitude, latitude, compagnie))
+    output = unicode("{0} [{1}] {4} ({2:0<13}/{3:0<13})").format(name, code, longitude, latitude, compagnie)
+
+    # Clean It
+    output = unicodedata.normalize('NFKD', output).encode('ascii', 'ignore')
+
+    print output
 
 def __print_train(train, stations):
+    
+    # Prepare the output
     code = train['trainMissionCode']
     terminus = train['trainTerminus']
     lane = train['trainLane']
     number = train['trainNumber']
     hour = train['trainHour'][11:]
     name = stations[terminus].strip()
-    print(unicode('{0:5}  {1:4}  {4:6}  {3:1}  {5:3}  {2:35}').format(hour, code, name, lane, number, terminus))
+    output = unicode('{0:5}  {1:4}  {4:6}  {3:1}  {5:3}  {2:35}').format(hour, code, name, lane, number, terminus)
+
+    # Clean It
+    output = unicodedata.normalize('NFKD', output).encode('ascii', 'ignore')
+
+    print output
 
 def __print_information(information):
     print " - " + information.strip().encode("utf-8", 'replace').replace("\n", "\n   ")
