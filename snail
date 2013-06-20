@@ -20,6 +20,7 @@
 
 from modules import database
 from modules import find
+from modules import station
 from modules import train
 
 import argparse
@@ -45,12 +46,12 @@ def parse_arguments():
     parser_init = subparser.add_parser('init', help='create, init the database')
     
     # Create the parser for the "find" command
-    parser_station = subparser.add_parser('find', help='find stations')
-    parser_station.add_argument('patterns', action='store', nargs='*', help='patterns')
+    parser_find = subparser.add_parser('find', help='find stations')
+    parser_find.add_argument('patterns', action='store', nargs='*', help='patterns')
     
-    # Create the parser for the "train" command
-    parser_train = subparser.add_parser('train', help='list next trains on a station')
-    parser_train.add_argument('station', action='store', help='the DDG code of the station')
+    # Create the parser for the "station" command
+    parser_station = subparser.add_parser('station', help='list next trains on a station')
+    parser_station.add_argument('station', action='store', help='the DDG code of the station')
 
     # Create the parser for the "help" command
     parser_help = subparser.add_parser('help', help='help for a command')
@@ -92,11 +93,11 @@ elif args.command_name == 'find':
     # List stations
     find.station(database_path, args.patterns)
 
-# Command : train
-elif args.command_name == 'train':
+# Command : station
+elif args.command_name == 'station':
 
-    # List the trains
-    train.list(database_path, parameters_path, args.station)
+    # List next trains
+    station.next(database_path, parameters_path, args.station)
 
 # No command : help
 else:
