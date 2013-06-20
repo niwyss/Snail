@@ -19,7 +19,7 @@
 # along with SNAIL.  If not, see <http://www.gnu.org/licenses/>.
 
 from modules import database
-from modules import station
+from modules import find
 from modules import train
 
 import argparse
@@ -44,11 +44,8 @@ def parse_arguments():
     # Create the parser for the "init" command
     parser_init = subparser.add_parser('init', help='create, init the database')
     
-    # Create the parser for the "station" command
-    parser_station = subparser.add_parser('station', help='list stations')
-    group_station_type_filter = parser_station.add_mutually_exclusive_group()
-    group_station_type_filter.add_argument('-n', '--name', action='store_true', help='find station by name', default=True)
-    group_station_type_filter.add_argument('-c', '--code', action='store_true', help='find station by code')
+    # Create the parser for the "find" command
+    parser_station = subparser.add_parser('find', help='find stations')
     parser_station.add_argument('patterns', action='store', nargs='*', help='patterns')
     
     # Create the parser for the "train" command
@@ -89,14 +86,11 @@ if args.command_name == 'init':
     # Init the base
     database.init(database_path, parameters_path)
 
-# Command : station
-elif args.command_name == 'station':
-
-    # Params
-    criteria = ("name","code")[args.code]
+# Command : find
+elif args.command_name == 'find':
 
     # List stations
-    station.list(database_path, criteria, args.patterns)
+    find.station(database_path, args.patterns)
 
 # Command : train
 elif args.command_name == 'train':

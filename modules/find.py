@@ -36,7 +36,7 @@ def __print_station(station):
     print template_line_format.format(code, name, longitude, latitude, compagnie) 
 
 
-def list(database_path, criteria, patterns):
+def station(database_path, patterns):
 
     # Test : database
     if not os.path.exists(database_path):
@@ -50,8 +50,6 @@ def list(database_path, criteria, patterns):
     # Fetch stations
     if not patterns or len(patterns) == 0:
         stations = database.fetch_all_stations(connection)
-    elif criteria == 'code':
-        stations = database.fetch_stations_by_codes(connection, patterns)
     else:
         stations = database.fetch_stations_by_names(connection, patterns)
 
