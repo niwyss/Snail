@@ -33,7 +33,6 @@ def __print_stop(stop, stations):
     lane = stop['lane']
     print(unicode('{0:5}  {3:2}  {1:4}  {2:35} ').format(hour, code, name, lane))
 
-
 # Infos about the train
 def detail(database_path, parameters_path, code_train):
     

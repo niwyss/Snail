@@ -25,15 +25,26 @@ import sqlite3
 import os
 import database
 import services
+import unicodedata
+
+# Template
+template_line_format  = unicode("{0:3}  {1:40} {4:4} ({2:0<13} / {3:0<13})")
 
 def __print_station(station):
-    name = station['name']
+
+    # Prepare the output
     code = station['code']
     compagnie = station['compagnie']
     longitude = station['longitude']
     latitude = station['latitude']
-    print(unicode("{0} [{1}] {4} ({2:0<13}/{3:0<13})").format(name, code, longitude, latitude, compagnie))
-
+    name = station['name']
+    output = template_line_format.format(code, name, longitude, latitude, compagnie) 
+    
+    # Clean It
+    output = unicodedata.normalize('NFKD', output).encode('ascii', 'ignore')
+    
+    print output
+    
 def __print_train(train, stations):
     code = train['trainMissionCode']
     terminus = train['trainTerminus']
