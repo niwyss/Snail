@@ -25,13 +25,22 @@ import sqlite3
 import os
 import database
 import services
+import unicodedata
+
+# Template
+template_stop_format  = unicode("{0:5}  {3:2}  {1:4}  {2:35} ")
 
 def __print_stop(stop, stations):
     hour = stop['time'][11:]
     code = stop['codeGare']
     name = stations[code].strip()
     lane = stop['lane']
-    print(unicode('{0:5}  {3:2}  {1:4}  {2:35} ').format(hour, code, name, lane))
+    output = template_stop_format.format(hour, code, name, lane)
+    
+    # Clean It
+    output = unicodedata.normalize('NFKD', output).encode('ascii', 'ignore')
+    
+    print output 
 
 # Infos about the train
 def detail(database_path, parameters_path, code_train):

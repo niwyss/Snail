@@ -28,7 +28,8 @@ import services
 import unicodedata
 
 # Template
-template_line_format  = unicode("{0:3}  {1:40} {4:4} ({2:0<13} / {3:0<13})")
+template_station_format  = unicode("{0:3}  {1:40} {4:4} ({2:0<13} / {3:0<13})")
+template_train_format  = unicode("{0:5}  {1:4}  {4:6}  {3:1}  {5:3}  {2:35}")
 
 def __print_station(station):
 
@@ -38,7 +39,7 @@ def __print_station(station):
     longitude = station['longitude']
     latitude = station['latitude']
     name = station['name']
-    output = template_line_format.format(code, name, longitude, latitude, compagnie) 
+    output = template_station_format.format(code, name, longitude, latitude, compagnie) 
     
     # Clean It
     output = unicodedata.normalize('NFKD', output).encode('ascii', 'ignore')
@@ -46,13 +47,20 @@ def __print_station(station):
     print output
     
 def __print_train(train, stations):
+
+	 # Prepare the output
     code = train['trainMissionCode']
     terminus = train['trainTerminus']
     lane = train['trainLane']
     number = train['trainNumber']
     hour = train['trainHour'][11:]
     name = stations[terminus].strip()
-    print(unicode('{0:5}  {1:4}  {4:6}  {3:1}  {5:3}  {2:35}').format(hour, code, name, lane, number, terminus))
+    output = template_train_format.format(hour, code, name, lane, number, terminus)
+    
+    # Clean It
+    output = unicodedata.normalize('NFKD', output).encode('ascii', 'ignore')
+    
+    print output  
 
 def __print_information(information):
     print " - " + information.strip().encode("utf-8", 'replace').replace("\n", "\n   ")
