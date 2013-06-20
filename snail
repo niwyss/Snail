@@ -52,6 +52,10 @@ def parse_arguments():
     # Create the parser for the "station" command
     parser_station = subparser.add_parser('station', help='list next trains on a station')
     parser_station.add_argument('station', action='store', help='the DDG code of the station')
+    
+    # Create the parser for the "train" command
+    parser_train = subparser.add_parser('train', help='list next stop for a train')
+    parser_train.add_argument('train', action='store', help='the code of the train')
 
     # Create the parser for the "help" command
     parser_help = subparser.add_parser('help', help='help for a command')
@@ -98,6 +102,12 @@ elif args.command_name == 'station':
 
     # List next trains
     station.next(database_path, parameters_path, args.station)
+    
+# Command : train
+elif args.command_name == 'train':
+
+    # List next stops
+    train.detail(database_path, parameters_path, args.train)
 
 # No command : help
 else:

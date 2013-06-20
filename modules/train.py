@@ -26,27 +26,16 @@ import os
 import database
 import services
 
-def __print_station(station):
-    name = station['name']
-    code = station['code']
-    compagnie = station['compagnie']
-    longitude = station['longitude']
-    latitude = station['latitude']
-    print(unicode("{0} [{1}] {4} ({2:0<13}/{3:0<13})").format(name, code, longitude, latitude, compagnie))
+def __print_stop(stop, stations):
+    hour = stop['time'][11:]
+    code = stop['codeGare']
+    name = stations[code].strip()
+    lane = stop['lane']
+    print(unicode('{0:5}  {3:2}  {1:4}  {2:35} ').format(hour, code, name, lane))
 
-def __print_train(train, stations):
-    code = train['trainMissionCode']
-    terminus = train['trainTerminus']
-    lane = train['trainLane']
-    number = train['trainNumber']
-    hour = train['trainHour'][11:]
-    name = stations[terminus].strip()
-    print(unicode('{0:5}  {1:4}  {4:6}  {3:1}  {5:3}  {2:35}').format(hour, code, name, lane, number, terminus))
 
-def __print_information(information):
-    print " - " + information.strip().encode("utf-8", 'replace').replace("\n", "\n   ")
-  
-def list(database_path, parameters_path, code_station):
+# Infos about the train
+def detail(database_path, parameters_path, code_train):
     
     # Test : database
     if not os.path.exists(database_path):
@@ -68,30 +57,16 @@ def list(database_path, parameters_path, code_station):
         code = station['code']
         name = station['name']
         stations[code] = name
+
+    # Get informations for this train 
+    train_infos = services.fetch_train_infos(parameters_path, code_train)
+
+    # Print list of next stop for this train
+    stops = train_infos['data']
+    if stops and not len(stops) == 0:
+        print "%d stop(s)" % len(stops)
+        for stop in stops:
+            __print_stop(stop, stations)
     
-    # Only if code exits in database
-    if code_station in stations:
-
-        # Get informations for this station 
-        station_infos = services.fetch_station_infos(parameters_path, code_station)
-        
-        # Print informations of the station
-        station = database.fetch_station_by_code(connection, code_station)
-        __print_station(station)
-
-        # Print list of next trains for this station
-        trains = station_infos['data']
-        if trains and not len(trains) == 0:
-            print "\n%d train(s)" % len(trains)
-            for train in trains:
-                __print_train(train, stations)
-
-        # Print informations on the track
-        infos = station_infos['list']
-        if infos and not len(infos) == 0:
-            print "\n%d information(s)" % len(infos)
-            for information in infos:
-                __print_information(information)
-
     # Close the connection
     connection.close()
