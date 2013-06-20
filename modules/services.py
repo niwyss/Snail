@@ -86,4 +86,19 @@ def fetch_station_infos(parameters_path, code_station):
     # Get data from the service
     return __fetch_data_from_web(host, selector, params, headers)[0]
 
+def fetch_train_infos(parameters_path, train_number):
+    
+    # Get configuration
+    configuration =  __read_configuration(parameters_path)
+
+    # Get informations for this service
+    host = configuration["host"] 
+    selector = configuration["selector"] 
+    params = configuration["params"]["infos"] % train_number
+    headers = configuration["headers"]
+
+    # Get data from the service
+    return __fetch_data_from_web(host, selector, params, headers)[0]
+
+
     
