@@ -29,7 +29,7 @@ import unicodedata
 
 # Template
 template_station_format  = unicode("{0:3}  {1:40} {4:4} ({2:0<13} / {3:0<13})")
-template_train_format  = unicode("{0:5}  {1:4}  {4:6}  {3:2}  {5:3}  {2:35}  {6:3}  {7:35} ")
+template_train_format  = unicode("{0:5}  {1:4}  {4:6}  {3:2}  {5:3}  {2:35}  {6:3}  {7:35}  {8:10}")
 
 # Global
 stations = {}
@@ -62,7 +62,8 @@ def __print_train(train):
     namePosition = stations[position].strip()
     position = train['trainPosition']
     departure = train['trainDeparture']
-    output = template_train_format.format(hour, code, nameTerminus, lane, number, terminus, position, namePosition)
+    status = train['trainStatus']
+    output = template_train_format.format(hour, code, nameTerminus, lane, number, terminus, position, namePosition, status)
     
     # Clean It
     output = unicodedata.normalize('NFKD', output).encode('ascii', 'ignore')
@@ -72,12 +73,14 @@ def __print_train(train):
 def __print_information(information):
     print " - " + information.strip().encode("utf-8", 'replace').replace("\n", "\n   ")
 
+# Find position of a train
 def __get_train_position(stops):
-    
-    # Find position by check time on each stop
+      
     position = ""
+
     if stops and not len(stops) == 0:
         
+        # Defautl : first stop
         position = stops[0]['codeGare']
         
         for stop in stops:
@@ -91,13 +94,29 @@ def __get_train_position(stops):
 
     return position
 
+# Find departure of a train
 def __get_train_departure(stops):
     
     departure = ""
+
     if stops and not len(stops) == 0:
         departure = stops[0]['codeGare']
         
     return departure
+
+# Find status of a train
+def __get_train_status(departure, position, mention):
+    
+    status = "."
+
+    if mention and not len(stops) == 0:
+        status = mention
+    elif departure == position:
+        status = "wait"
+    else: 
+        status = "incoming"
+    
+    return status
   
 # Next trains on a station
 def next(database_path, parameters_path, code_station):
@@ -145,8 +164,10 @@ def next(database_path, parameters_path, code_station):
                 number = train['trainNumber']
                 code = train['trainMissionCode']
 
+                # Get some extra infos from train service
                 departure = ""
                 position = ""
+                status = "."
 
                 if not code in codes:
                     
@@ -161,9 +182,13 @@ def next(database_path, parameters_path, code_station):
                     
                     # Find departure
                     departure = __get_train_departure(stops)
+                    
+                    # Find status
+                    status = __get_train_status(departure, position, train['trainMention'])
 
                 # Print informations
                 train['trainDeparture'] = departure
+                train['trainStatus'] = status
                 train['trainPosition'] = position
                 __print_train(train)
 
