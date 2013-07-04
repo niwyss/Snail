@@ -88,6 +88,7 @@ def next(database_path, parameters_path, code_station):
        
     # Transforms stations list into dictionnary
     stations = {}
+    stations[''] = ''
     for station in database.fetch_all_stations(connection):
         code = station['code']
         name = station['name']
@@ -107,23 +108,33 @@ def next(database_path, parameters_path, code_station):
         trains = station_infos['data']
         if trains and not len(trains) == 0:
             print "\n%d train(s)" % len(trains)
+            codes = []
             for train in trains:
 
-                # Get train number (Id)
+                # Get some ID for the train
                 number = train['trainNumber']
+                code = train['trainMissionCode']
 
-                # Get stops for this train 
-                stops = services.fetch_train_infos(parameters_path, number)['data']
-                
-                # Find position
-                position = __get_train_position(stops)
-                train['trainPosition'] = position
+                departure = ""
+                position = ""
 
-                # Find departure
-                departure = __get_train_departure(stops)
-                train['trainDeparture'] = departure
+                if not code in codes:
+                    
+                    # Keep the code
+                    codes.append(code)
+                    
+                    # Get stops for this train 
+                    stops = services.fetch_train_infos(parameters_path, number)['data']
+                    
+                    # Find position
+                    position = __get_train_position(stops)
+                    
+                    # Find departure
+                    departure = __get_train_departure(stops)
 
                 # Print informations
+                train['trainDeparture'] = departure
+                train['trainPosition'] = position
                 __print_train(train, stations)
 
         # Print informations on the track
