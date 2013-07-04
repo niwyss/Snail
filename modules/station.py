@@ -31,6 +31,9 @@ import unicodedata
 template_station_format  = unicode("{0:3}  {1:40} {4:4} ({2:0<13} / {3:0<13})")
 template_train_format  = unicode("{0:5}  {1:4}  {4:6}  {3:2}  {5:3}  {2:35}  {6:3}  {7:35} ")
 
+# Global
+stations = {}
+
 def __print_station(station):
 
     # Prepare the output
@@ -46,7 +49,7 @@ def __print_station(station):
     
     print output
     
-def __print_train(train, stations):
+def __print_train(train):
 
     # Prepare the output
     code = train['trainMissionCode']
@@ -68,6 +71,33 @@ def __print_train(train, stations):
 
 def __print_information(information):
     print " - " + information.strip().encode("utf-8", 'replace').replace("\n", "\n   ")
+
+def __get_train_position(stops):
+    
+    # Find position by check time on each stop
+    position = ""
+    if stops and not len(stops) == 0:
+        
+        position = stops[0]['codeGare']
+        
+        for stop in stops:
+            
+            # Get time
+            time = stop['time'][11:]
+            
+            # Get position
+            if not time or len(time) == 0:
+                position = stop['codeGare']
+
+    return position
+
+def __get_train_departure(stops):
+    
+    departure = ""
+    if stops and not len(stops) == 0:
+        departure = stops[0]['codeGare']
+        
+    return departure
   
 # Next trains on a station
 def next(database_path, parameters_path, code_station):
@@ -87,7 +117,7 @@ def next(database_path, parameters_path, code_station):
     connection.row_factory = sqlite3.Row
        
     # Transforms stations list into dictionnary
-    stations = {}
+    global stations
     stations[''] = ''
     for station in database.fetch_all_stations(connection):
         code = station['code']
@@ -135,7 +165,7 @@ def next(database_path, parameters_path, code_station):
                 # Print informations
                 train['trainDeparture'] = departure
                 train['trainPosition'] = position
-                __print_train(train, stations)
+                __print_train(train)
 
         # Print informations on the track
         infos = station_infos['list']
@@ -147,33 +177,6 @@ def next(database_path, parameters_path, code_station):
     # Close the connection
     connection.close()
 
-
-def __get_train_position(stops):
-    
-    # Find position by check time on each stop
-    position = ""
-    if stops and not len(stops) == 0:
-        
-        position = stops[0]['codeGare']
-        
-        for stop in stops:
-            
-            # Get time
-            time = stop['time'][11:]
-            
-            # Get position
-            if not time or len(time) == 0:
-                position = stop['codeGare']
-
-    return position
-
-def __get_train_departure(stops):
-    
-    departure = ""
-    if stops and not len(stops) == 0:
-        departure = stops[0]['codeGare']
-        
-    return departure
             
         
 
