@@ -105,7 +105,7 @@ def __get_train_departure(stops):
     return departure
 
 # Find status of a train
-def __get_train_status(departure, position, mention):
+def __get_train_status(departure, position, mention, stops):
     
     status = "."
 
@@ -184,7 +184,7 @@ def next(database_path, parameters_path, code_station):
                     departure = __get_train_departure(stops)
                     
                     # Find status
-                    status = __get_train_status(departure, position, train['trainMention'])
+                    status = __get_train_status(departure, position, train['trainMention'], stops)
 
                 # Print informations
                 train['trainDeparture'] = departure
