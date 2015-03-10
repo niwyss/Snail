@@ -25,15 +25,16 @@ import os
 import database
 
 # Template
-template_line_format  = unicode("{0:3}  {1:40} {4:4} ({2:0<13} / {3:0<13})")
+template_line_format  = unicode("{0:8}  {1:55} {4:4} ({2:0<13} / {3:0<13}) {5:3}")
 
 def __print_station(station):
     code = station['code']
     longitude = station['longitude']
     latitude = station['latitude']
     name = station['name']
-    compagnie = station['compagnie']
-    print template_line_format.format(code, name, longitude, latitude, compagnie) 
+    compagny = station['compagny']
+    zone_navigo = station['zone_navigo']
+    print template_line_format.format(code, name, longitude, latitude, compagny, zone_navigo)
 
 
 def station(database_path, patterns):

@@ -18,25 +18,12 @@
 # You should have received a copy of the GNU General Public License
 # along with SNAIL.  If not, see <http://www.gnu.org/licenses/>.
 
-import settings
-import json
-import sys
-import requests
+# Url
+URL_NEXT_TRAIN = "http://api.transilien.com/gare/{0}/depart/"
 
-def __fetch_data_from_web(url, login, password):
-    try:
-        response = requests.get(url, auth=(login, password))
-        return response.content
-    except:
-        print "snail: error: web service unreachable."
-        sys.exit(0)
+# Keychains
+LOGIN = "login"
+PASSWORD = "password"
 
-def fetch_next_trains(code_station):
-
-    # Get informations for this service
-    url = settings.URL_NEXT_TRAIN.format(code_station)
-    login = settings.LOGIN
-    password = settings.PASSWORD
-
-    # Get data from the service
-    return __fetch_data_from_web(url, login, password)
+# Path
+STATION_FILE_STORAGE_DIRECTORY_FOLDER = "data"

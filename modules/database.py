@@ -18,10 +18,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 
+import settings
 import sqlite3
 import sys
 import os
-import services
+import csv
+import datetime
+import time
 
 def create(database_path):
 
@@ -34,24 +37,19 @@ def create(database_path):
     connection = sqlite3.connect(database_path)
 
     # Create table station
-    connection.execute(''' create table station (id integer primary key, 
-                                                 code      text,
-                                                 name      text,
-                                                 compagnie text,
-                                                 longitude real, 
-                                                 latitude  real)''')
+    connection.execute(''' create table station (id integer primary key,
+                                                 code        text,
+                                                 name        text,
+                                                 city        text,
+                                                 compagny    text,
+                                                 zone_navigo int,
+                                                 longitude   real,
+                                                 latitude    real)''')
 
-    # Create table line
-    connection.execute(''' create table line (id integer primary key, 
-                                              code      text,
-                                              network   text,
-                                              position  integer,
-                                              vehicle   text)''')
-
-    # Save (commit) the changes 
+    # Save (commit) the changes
     connection.commit()
 
-def init(database_path, parameters_path):
+def init_with_file(database_path, stations_file, app_path):
 
     # Test : database
     if not os.path.exists(database_path):
@@ -59,70 +57,59 @@ def init(database_path, parameters_path):
         sys.exit(1)
 
     # Test : parameters.json
-    if not os.path.exists(parameters_path):
+    if not stations_file:
         print "snail: error: parameters.json doesn't exist. Grab it from anywhere."
         sys.exit(1)
-
-    # Get the stations list
-    stations = services.fetch_stations(parameters_path, "000000000000")
-
-    # Get the lines list
-    lines = services.fetch_lines(parameters_path, "000000000000")
 
     # Connection to the base
     connection = sqlite3.connect(database_path)
     connection.row_factory = sqlite3.Row
-    
+
     # Clean the base
-    connection.execute(' delete from station '); 
+    connection.execute(' delete from station ');
+
+    # Get a reader for the file
+    reader = csv.DictReader(stations_file, delimiter=';')
 
     # Fill the table station
-    for station in stations['data']:
-    
+    for station in reader:
+
         # Fetch values from JSON
-        code = station['codeTR3A']
-        name = station['name']
-        compagnie = station['type']
-        longitude = station['positions'][0]['longitude']
-        latitude = station['positions'][0]['latitude']
+        code = station["code_uic"]
+        name = station["libelle"].decode('utf-8')
+        city = station["commune"].decode('utf-8')
+        longitude, latitude = station["coord_gps_wgs84"].split(', ')
+        zone_navigo = station["zone_navigo"]
 
         # Correct value for SNCF station
-        if (len(compagnie) == 0):
-            compagnie = 'SNCF'  
-        
-        # Add to the database
-        add_station(connection, code, name, compagnie, longitude, latitude)
-
-    # Fill the table line
-    for line in lines['data']:
-
-        # Fetch values from JSON
-        code = line['idLigne']
-        position = line['position']
-        vehicle = line['type']
-        network = line['network']
-        picto = line['picto']
+        compagny = "SNCF"
+        if (station["gare_non_sncf"] == '1'):
+            compagny = 'RATP'
 
         # Add to the database
-        add_line(connection, code, position, vehicle, network) 
+        add_station(connection, code, name, compagny, longitude, latitude, city, zone_navigo)
 
     # Save (commit) the changes
     connection.commit()
 
-# Table : Line
+    # Store station file
+    store_station_file(stations_file, app_path)
 
-def add_line(connection, code, position, vehicle, network):
-     values = (code, position, vehicle, network) 
-     connection.execute(''' insert into line(code, position, vehicle, network) 
-                            values (?, ?, ?, ?) ''', values )    
+def store_station_file(stations_file, app_path):
 
+    # Create storage folder (if needed)
+    data_path = os.path.join(app_path, settings.STATION_FILE_STORAGE_DIRECTORY_FOLDER)
+    if  not os.path.exists(data_path):
+        os.makedirs(data_path)
 
-# Table : Station
+    # Move file
+    st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H-%M-%S.csv')
+    os.rename(stations_file.name, os.path.join(data_path, st))
 
-def add_station(connection, code, name, compagnie, longitude, latitude):
-     values = (code, name, compagnie, longitude, latitude) 
-     connection.execute(''' insert into station(code, name, compagnie, longitude, latitude) 
-                            values (?, ?, ?, ?, ?) ''', values )           
+def add_station(connection, code, name, compagnie, longitude, latitude, city, zone_navigo):
+     values = (code, name, compagnie, longitude, latitude, city, zone_navigo)
+     connection.execute(''' insert into station(code, name, compagny, longitude, latitude, city, zone_navigo)
+                            values (?, ?, ?, ?, ?, ?, ?) ''', values )
 
 def fetch_all_stations(connection):
     sql = ' SELECT * FROM station '

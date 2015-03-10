@@ -18,10 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SNAIL.  If not, see <http://www.gnu.org/licenses/>.
 
+from modules import settings
 from modules import database
 from modules import find
 from modules import station
-from modules import train
 
 import argparse
 import sys
@@ -38,24 +38,23 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description=product_description, prog=product_name)
     parser.add_argument('--version', action='version', version='%(prog)s ' + product_version)
     parser.add_argument('-v', '--verbose', action='store_true', help='verbose')
-    
+
     # Create the low-level parser
     subparser = parser.add_subparsers(title='commands', dest="command_name" )
 
     # Create the parser for the "init" command
     parser_init = subparser.add_parser('init', help='create, init the database')
-    
+    group_import_type = parser_init.add_mutually_exclusive_group(required=True)
+    group_import_type.add_argument('--file', action='store', type=argparse.FileType('r'), help='import stations from file')
+    group_import_type.add_argument('--url', action='store', help='import stations from url')
+
     # Create the parser for the "find" command
     parser_find = subparser.add_parser('find', help='find stations')
     parser_find.add_argument('patterns', action='store', nargs='*', help='patterns')
-    
+
     # Create the parser for the "station" command
     parser_station = subparser.add_parser('station', help='list next trains on a station')
     parser_station.add_argument('station', action='store', help='the DDG code of the station')
-    
-    # Create the parser for the "train" command
-    parser_train = subparser.add_parser('train', help='list next stop for a train')
-    parser_train.add_argument('train', action='store', help='the code of the train')
 
     # Create the parser for the "help" command
     parser_help = subparser.add_parser('help', help='help for a command')
@@ -68,7 +67,7 @@ parser = parse_arguments()
 # Get options from command line
 args = parser.parse_args()
 
-# Get the path to command from where she's called                           
+# Get the path to command from where she's called
 path = "."
 if os.path.islink(sys.argv[0]):
     path = os.readlink(sys.argv[0])[:-5]
@@ -79,17 +78,18 @@ path = os.path.abspath(path) + os.sep
 # The default database
 database_path = path + 'snail.sqlite'
 
-# The default parameters
-parameters_path = path + 'parameters.json'
-
 # Command : init
 if args.command_name == 'init':
-    
+
     # Create the base
     database.create(database_path)
 
     # Init the base
-    database.init(database_path, parameters_path)
+    if (args.file):
+        database.init_with_file(database_path, args.file, path)
+
+    if (args.url):
+        print "Not yet"
 
 # Command : find
 elif args.command_name == 'find':
@@ -101,21 +101,8 @@ elif args.command_name == 'find':
 elif args.command_name == 'station':
 
     # List next trains
-    station.next(database_path, parameters_path, args.station)
-    
-# Command : train
-elif args.command_name == 'train':
-
-    # List next stops
-    train.detail(database_path, parameters_path, args.train)
+    station.next(database_path, args.station)
 
 # No command : help
 else:
     parser.print_help()
-
-
-
-
-
-
-
