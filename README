@@ -1,31 +1,41 @@
 
 SNAIL : Put a snail in your shell
 
-   - Researchs and prints station's informations
-   - Print next trains on a station
+   - Search and prints the station's informations
+   - Prints the next trains on a station
 
-Usage : 
-   
+Requirements :
+
+   1) Get the stations's list from SNCF's OpenData web site : https://ressources.data.sncf.com/explore/dataset/sncf-gares-et-arrets-transilien-ile-de-france/?tab=metas
+   > curl -o stations.csv  https://ressources.data.sncf.com/explore/dataset/sncf-gares-et-arrets-transilien-ile-de-france/download/?format=csv&timezone=Europe/Berlin
+
+   2) Snail uses open one API from SNCF. In order to use Snail, you should ask an ID for this API to SNCF. See this page for more informations : https://ressources.data.sncf.com/explore/dataset/api-temps-reel-transilien/?tab=metas
+      Then you can configure your's snail by adding your login / password to this file : modules/settings.py
+
+
+Usage :
+
    0) Init the database :
 
-   > snail init [URL]
+   > snail init --file stations.csv
 
 
-   1) Researchs and prints station's informations :
+   1) Search and prints the stations's informations :
 
-   > snail station Rungis
-   PRU  P. DE RUNGIS AEROP.                 
-   RF   RUNGIS LA FR. 
+   > snail find rungis
+   87546291  RUNGIS LA FRATERNELLE                                   SNCF (48.7402800868 / 2.35276043346)   4
+   87546192  PONT DE RUNGIS Aéroport d'Orly                          SNCF (48.7478708023 / 2.37293264591)   4
 
 
-   2) Print next trains on a station : 
+   2) Prints the next trains on a station :
 
-   > snail train PRU
-   GOTA  22:38  2  MONTIGNY BEAUCHAMP                 
-   GOTA  23:08  2  MONTIGNY BEAUCHAMP                 
-   GOTA  23:38  2  MONTIGNY BEAUCHAMP 
+   > snail station 87546192
+   87546192  PONT DE RUNGIS Aeroport d'Orly                          SNCF (48.7478708023 / 2.37293264591)   4
+
+   22 train(s)
+   23/03/2015 11:23 [R]  142596  NORA  PONTOISE
+   23/03/2015 11:38 [R]  141589  MONA  MASSY PALAISEAU
+   23/03/2015 11:38 [R]  148102  GOTA  MONTIGNY BEAUCHAMP
 
 SNAIL - 2012 (c) Nicolas Wyss
 See COPYING and file headers for license info
-
-
